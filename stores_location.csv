@@ -1,0 +1,71 @@
+id,name,whatsappLink,location,operatingHours
+70,Giant Kangar,https://wa.me/601111058853,"Lot PS19, Ground Floor, Giant Kangar, PT 4819 Taman Putra Utama, Jalan Raja Syed Alwi, 01000 Kangar, Perlis",10AM-10PM
+69,Mydin Jengka (Kiosk),https://wa.me/601158554903,"Lot GP63, Ground Floor, Mydin Mall Jengka, Bandar Jengka, 26400 Bandar Tun Razak, Pahang",10AM-10PM
+68,Lotus's Indera Mahkota (Kiosk),https://wa.me/60127893740,"Lot OLG5, Ground Floor, Lotus's Indera Mahkota, Lorong IM 8/3, Bandar Indera Mahkota, 25200 Kuantan, Pahang.",10AM-10PM
+67,Mydin Pulau Sebang (Kiosk),https://wa.me/60143986001,"Lot No.FPL03, First Floor, Mydin Pulau Sebang, Lot No. PT20 & PT2053, Town of Pulau Sebang, Section 11, Mukim of Pulau Sebang, Alor Gajah, 73000 Melaka.",10AM-10PM
+66,Mydin Jasin Melaka (Kiosk),https://wa.me/60107695400,"PT 8537, Seksyen 1 Bandar Jasin Bestari, 77200 Jasin, Melaka",10AM-10PM
+65,Mydin MITC (Kiosk),https://wa.me/60149226387,"Lot GPL-38, Ground Floor, Mydin Mall MITC, No. 12, Hang Tuah Jaya, Melaka, 75450 Ayer Keroh, Melaka",10AM-10PM
+64,KB Mall Kelantan (Dealer),https://wa.me/601159191697,"Kiosk 3K47 & 3K48, 3rd Floor, KB Mall, Jalan Hamzah, Bandar Kota Bharu, 15050 Kota Bharu, Kelantan",10AM-10PM
+63,Econsave Pasir Puteh (Retail Store),https://wa.me/601159190980,"Lot No. PP27, Ground Floor, Econsave Pasir Puteh, Lot PT 2980, Jalan Pasir Puteh - Kampung Tok Bali, Sentral 1 Central, 16800 Pasir Puteh, Kelantan",10AM-10PM
+62,Mydin Tunjong Mall (Kiosk),https://wa.me/601158754983,"FPL-94 Mydin Mall Tunjong, Lot PT666, Jalan Kuala Krai, 16010 Kota Bharu, Kelantan",10AM-10PM
+61,Lotus's Mergong (Retail Store),https://wa.me/601159191303,"GOL-10, Ground Floor, Lotus's Mergong, No. 1, Sultanah Bahiyah Hwy, Bandar Baru Mergong, 05150 Alor Setar, Kedah",10AM-10PM
+60,Mydin Taman Batik Sg. Petani (Kiosk),https://wa.me/601159187088,"Lot No. P06, Ground Floor, Mydin Wholesale Hypermarket Taman Batik, G-06, Jalan Batik 2/2A, Taman Batik, 08000 Sungai Petani, Kedah",10AM-10PM
+59,Aman Central,https://wa.me/60164466886,"Unit No. 4-K01-A, 4th Floor, Aman Central, 1, Darul Aman Hwy, Taman Aman, 05100 Alor Setar, Kedah",10AM-10PM
+58,IOI City Mall Putrajaya (Retail Store),https://wa.me/601158754986,"B1-17, Basement 1, iOi City Mall Lebuh IRC, iOi Resort City 62502 Putrajaya, Wilayah Persekutuan Putrajaya",10AM-10PM
+57,Mydin Seremban 2 (Kiosk),https://wa.me/601158755816,"Lot GPL-29, Ground Floor, Mydin Mall Seremban 2, Persiaran S2B7, Seremban 2, 70300 Seremban, Negeri Sembilan",10AM-10PM
+56,Mydin Senawang (Kiosk),https://wa.me/601158755837,"Lot GPL-26, Ground Floor, Mydin Mall Senawang, 110, Jalan BPS 7, Bandar Prima Senawang, 70450 Seremban, Negeri Sembilan",10AM-10PM
+55,Giant Kuala Pilah,https://wa.me/60182213489,"Lot PS30, Ground Floor, Giant Kuala Pilah, Jalan Melang, Kampung Kayu Ara, 72000 Kuala Pilah, Negeri Sembilan",10AM-10PM
+54,Harbour Mall Sandakan,https://wa.me/601139262301,"Lot No. 3C17, Harbour Square, Pusat Bandar Sandakan, 90000 Sandakan, Sabah",10AM-9PM
+53,Imago Shopping Mall,https://wa.me/601137903769,"2nd Floor (In Front of Getha), IMAGO Shopping Mall, KK Times Square, Phase 2, Off Coastal Highway, 88100 Kota Kinabalu, Sabah",10AM-10PM
+52,Mydin Petrajaya (Kiosk) - Temporarily Closed,https://wa.me/601159191680,"Lot No.GPL-29, Ground Floor, Mydin Petrajaya, Jalan Demak, Petra Jaya, 93050, Sarawak",10AM-10PM
+51,Vivacity Kuching (Kiosk),https://wa.me/601158754988,"Lot L2-K003, Level 2, Vivacity Megamall, Jalan Wan Alwi, 93350 Kuching, Sarawak",10AM-10PM
+50,Metromall Kuching,https://wa.me/601114940146,"Survey Lot 13767, MetroMall @ Metrocity Square, Unit GS 21, Sublot No. 112, Ground Floor, Section 6, Jalan Metrocity Boulevard, Taman Fah Tah, 93050 Kuching, Sarawak",10AM-10PM
+49,The Spring Shopping Mall Bintulu,https://wa.me/60133074394,"Kiosk No. KF4, First Floor, The Spring Shopping Mall, Lot 4282, Jalan Tun Abdul Razak, 97000 Bintulu, Sarawak",10AM-10PM
+48,KTCC Mall (Kiosk),https://wa.me/60172172308,"Kiosk 2K-73A & 2K-75, Second Floor, KTCC Mall, Jalan Sultan Zainal Abidin, 20200 Kuala Terengganu, Terengganu",10AM-10PM
+47,Mydin Kuala Terengganu (Kiosk),https://wa.me/601159186344,"Lot PT 1547 & 1548, Jalan Sultan Mohamad, 21000 Kuala Terengganu, Terengganu",10AM-10PM
+46,Mydin Gong Badak (Kiosk),https://wa.me/601159191672,"Lot FPL-121, First Floor, Mydin Mall Gong Badak, LOT PT35511, Jalan Gong Pak Damat, Kampung Banggol, 21300 Kuala Terengganu, Terengganu",10AM-10PM
+45,Giant Jertih,https://wa.me/60107965372,"Lot PS10, Ground Floor, Giant Jerteh, Lot 6000 Pusat Bandar Jerteh, 22000 Jerteh, Besut, Terengganu",10AM-10PM
+44,Mydin Bertam (Kiosk),https://wa.me/601159191687,"Lot No.P-17, Ground Floor, Mydin Mall Bertam, No 2243, Jalan Tun Hamdan Syeikh Bandar Putra Bertam, 13200 Kepala Batas, Pulau Pinang.",10AM-10PM
+43,Mydin Bukit Mertajam (Kiosk),https://wa.me/601159185611,"Lot FP,23, First Floor, MYDIN Mall Bukit Mertajam, Mukim, 06, Jln Baru, 13600, Pulau Pinang",10AM-10PM
+42,AEON MALL Bukit Mertajam,https://wa.me/601162432340,"Lot S56, 2nd Floor, AEON Mall Bukit Mertajam, Lot No. 30908, Jalan Rozhan Alma, 14000 Bukit Mertajam, Pulau Pinang",10AM-10PM
+41,Mydin Meru Raya (Kiosk),https://wa.me/601159191644,"Lot FK-30, First Floor, Mydin Mall Meru Raya, Jalan Meru Bistari B2, Jelapang, 30020 Ipoh, Perak",10AM-10PM
+40,Mydin Parit Buntar (Kiosk),https://wa.me/601159191079,"Lot GP-21, Ground Floor, Mydin Mall Parit Buntar, Kerian Sentral Mall, Lot 23252, Jalan Sekolah, Kampung Permatang Tok Mamat, 34200 Parit Buntar, Perak",10AM-10PM
+39,Lotus's Kampar (Kiosk),https://wa.me/601119241804,"Lot P13, Ground Floor, Lotus's Kampar, Jalan Kampar, Jalan Perdana, Taman Kampar Perdana, 31900 Kampar, Perak",10AM-10PM
+38,Lotus's Teluk Intan (Kiosk),https://wa.me/601159191611,"Lot P11, First Floor, Lotus's Teluk Intan, Jalan Changkat Jong, 36000 Teluk Intan, Perak",10AM-10PM
+37,Lotus's Seri Iskandar,https://wa.me/601165588427,"Lot P2, Ground Floor, Lotus's, 1, Jalan Susur Utama, 32610 Seri Iskandar, Perak",10AM-10PM
+36,Angsana Mall JB (Kiosk),https://wa.me/601159191730,"K4.7, Level 4, Angsana Johor Bahru Mall, Jalan Tampoi, Bandar Baru Uda, 81200, Johor Bahru, Johor",10AM-10PM
+35,Mydin Pelangi Indah JB (Kiosk),https://wa.me/60134320103,"PTD 120470, Persiaran Pelangi Indah, Taman Pelangi Indah, 81800 Ulu Tiram, Johor",10AM-10PM
+34,Mydin Taman Rinting JB (Kiosk),https://wa.me/601159186288,"Mydin Mall, Jln Rinting, Taman Rinting, 81750 Masai, Johor",10AM-10PM
+33,Mydin Mutiara Rini JB (Kiosk),https://wa.me/601159184133,"7, Persiaran Jaya 1, Mutiara Rini, 81300 Johor Bahru, Johor",10AM-10PM
+32,Lotus's Desa Tebrau (Kiosk),https://wa.me/60199687871,"1, Persiaran Desa Tebrau, Taman Desa Tebrau, 81100 Johor Bahru, Johor ",10AM-10PM
+31,Pontian (Retail Store),https://wa.me/60173774841,"No. 60, Jalan Delima, Pontian Kecil, 82000, Pontian, Johor.","10AM-6.30PM, closed Mondays & Public Holidays"
+30,Sunway Kluang Mall,https://wa.me/601135012905,"Lot 1-63A, first floor, Kluang Mall, Jalan Rambutan, Taman Suria, 86000 Kluang, Johor",10AM-10PM
+29,AEON Mall Kulai,https://wa.me/60186676627,"Lot KF 7 , 1st Floor, F49, Indahpura, 81000 Kulai, Johor",10AM-10PM
+28,Batu Pahat Mall - BP Mall,https://wa.me/601111538903,"Kiosk No. GK08, Ground Floor, Batu Pahat Mall, No.325, Jalan Kluang 83000 Batu Pahat, Johor",10AM-10PM
+27,Lotus's Kuala Selangor,https://wa.me/601159191615,"Lot P9, Ground Floor, Lotus's Kuala Selangor No.2 Jalan Tiara, 1, Jalan Medan Niaga 2, 45000 Kuala Selangor, Selangor",10AM-10PM
+26,Lotus's Puncak Alam,https://wa.me/601165588540,"Lot P12, Ground Floor, Lotus's Puncak Alam, 1, Jalan Niaga Bistari 9, Puncak Bestari, 42300 Puncak Alam, Selangor",10AM-10PM
+25,Mydin USJ (Kiosk),https://wa.me/601120502826,"FPL-22 675 & 676, Persiaran Subang Permai, USJ 1, 47500 Subang Jaya, Selangor",10AM-10PM
+24,Matahari Taman Sri Manja (Kiosk),https://wa.me/601159191593,"Lot PS07, Ground Floor, Pasaraya Borong Matahari Taman Sri Manja, 1, Jalan PJS 3/61, Taman Sri Manja, 46000 Petaling Jaya, Selangor",10AM-10PM
+23,Lotus's Puchong (Kiosk),https://wa.me/601159191742,"Lot F-OL04 & F-OL05, First Floor, Lotus's Puchong, Lot 148 & 149, Pusat Bandar Puchong Jalan Bandar 3, Off, Jalan Puchong, 47100 Puchong, Selangor",10AM-10PM
+22,Lotus's Klang (Kiosk),https://wa.me/601159191167,"F-OL13, First Floor, Lotus's Klang, Jalan Batu Nilam, Bandar Bukit Tinggi 1, 41200 Klang, Selangor",10AM-10PM
+21,Ampang Point (Retail Store),https://wa.me/601159186433,"Lot G02, Ground Floor, Ampang Point Shopping Centre, Jln Memanda 3, Taman Dato Ahmad Razali, 68000 Ampang Jaya, Selangor",10AM-10PM
+20,Mydin Semenyih (Kiosk),https://wa.me/601158754978,"Lot GPL-19, Mydin Mall Semenyih Lot 21452, Jln Anggerik Perdana 1, Taman Anggerik Perdana, 43500 Semenyih, Selangor",10AM-10PM
+19,Lotus's Rawang (Kiosk),https://wa.me/601158755813,"Lot GOL-04, Ground Floor, Lotus's Rawang, 1, Jalan Rawang, 48000 Rawang, Selangor",10AM-10PM
+18,MOJO SKINS X CompAsia (SS15),https://wa.me/60173383917,"8, Jalan SS15/4, Ss 15, 47500 Subang Jaya, Selangor",9AM-11PM
+17,Giant Shah Alam Stadium,https://wa.me/60196259626,"Lot PS61, Ground Floor, Giant Shah Alam Stadium, Lot 2, Persiaran Sukan, Seksyen 13, 40100 Shah Alam, Selangor",10AM-10PM
+16,Giant Bandar Kinrara,https://wa.me/60149651592,"Lot PS53, First Floor, Giant Bandar Kinrara, Lot 449 Giant Bandar Kinrara, Jalan BK 5a/1, Bandar Kinrara 5, 47180 Puchong, Selangor",10AM-10PM
+15,Giant Putra Heights,https://wa.me/60149651592,"Lot PSG09, Ground Floor, Giant Putra Heights, 3, Persiaran Putra Perdana, Putra Heights, 47650 Subang Jaya, Selangor",10AM-10PM
+14,Giant Seri Kembangan,https://wa.me/60104311591,"Lot FPS03, First Floor, Giant Seri Kembangan, Jalan Putra Permai, Pusat Bandar Putra Permai, 43300 Seri Kembangan, Selangor",10AM-10PM
+13,Giant Hypermarket Hulu Kelang,https://wa.me/601164198249,"Lot PFB, Ground Floor, Giant Ulu Klang, Lot 13793 & 13796, Jalan Changkat Permata, Taman Permata, 53300 Kuala Lumpur, Wilayah Persekutuan Kuala Lumpur",10AM-10PM
+12,Giant Setapak,https://wa.me/60196259626,"Lot PS19, Ground Floor, Giant Setapak, 5, Jalan Kilang, Wangsa Maju, 53300 Kuala Lumpur, Wilayah Persekutuan Kuala Lumpur",10AM-10PM
+11,Pavilion Bukit Jalil,https://wa.me/60137812180,"Lot P5.25.00, Level 5, Pavilion Bukit Jalil 2, Persiaran Jalil 8, Bukit Jalil, 57000 Kuala Lumpur, Wilayah Persekutuan Kuala Lumpur",10AM-10PM
+9,Sunway Carnival (Kiosk),https://api.whatsapp.com/send?phone=601158755826,"2F-K23A & 2F-K25, 2nd Floor, Sunway Carnival 3068 Jalan Todak, Pusat Bandar Seberang Jaya Seberang Jaya, 17, Jalan Todak 2, Seberang Jaya, 13700 Perai, Pulau Pinang",10AM-10PM
+8,Pavilion Bukit Jalil (Kiosk),https://wa.me/60137812180,"Lot P5.25.00, Level 5, Pavilion Bukit Jalil 2,
+Persiaran Jalil 8, Bukit Jalil,
+57000 Kuala Lumpur, Wilayah Persekutuan Kuala Lumpur",10AM - 10PM
+7,Berjaya Times Square (Kiosk),https://api.whatsapp.com/send?phone=601159186499,"1, Jln Imbi, Bukit Bintang, 55100 Kuala Lumpur, Wilayah Persekutuan Kuala Lumpur",10AM-10PM
+6, KL East Mall,https://wa.me/601116832363,"G3-29, GROUND FLOOR 3, KL East Mall, 823, Jalan Lingkaran Tengah 2, KL Timur, 53100 Kuala Lumpur, Wilayah Persekutuan Kuala Lumpur",10AM - 10PM
+5,Sunway Putra Mall,https://wa.me/60105529407,"Lot 3-15, 100, Sunway Putra Mall, Jalan Putra, Chow Kit, 50350 Kuala Lumpur, Wilayah Persekutuan Kuala Lumpur",10AM- 10PM
+4,Sunway Pyramid (Trade-in Centre),https://wa.me/601156915015,"LG2.31A3, Sunway Pyramid, 3 Jalan PJS 11/15, Bandar Sunway, 47500, Petaling Jaya, Selangor.",10AM-10PM
+3,1 Utama (Retail Store),https://wa.me/601113216085,"Lot B3 Basement 1, 1 Utama Shopping Centre (New Wing), Lebuh Bandar Utama, Bandar Utama, 47800 Petaling Jaya, Selangor",10AM-10PM
+2,KL Sentral (Retail Store),ttps://wa.me/011-1321 6172,"Unit 7A, Level 1, Stesen Sentral Kuala Lumpur, 50470 Kuala Lumpur, Wilayah Persekutuan Kuala Lumpur",10AM-10PM

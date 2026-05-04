@@ -21,6 +21,14 @@ from engine_matching import (
     summarize_conversation,
 )
 from excel_utils import load_knowledge_base
+from store_locator import (
+    build_store_locator_prompt,
+    detect_language,
+    detect_location,
+    find_matching_stores,
+    is_location_query,
+    load_stores,
+)
 
 BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR / ".env")
@@ -146,6 +154,92 @@ def _build_sales_redirect_prompt(user_message: str, product_json: str) -> str:
     )
 
 
+def _generate_store_reply(prompt: str, provider: str) -> str:
+    """Call the LLM to turn a store locator prompt into a friendly reply."""
+    provider_name = (provider or "").lower()
+    try:
+        if provider_name == "openai":
+            client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+            response = client.chat.completions.create(
+                model=DEFAULT_OPENAI_MODEL,
+                messages=[
+                    {"role": "system", "content": "Reply as a friendly retail assistant in plain text."},
+                    {"role": "user", "content": prompt},
+                ],
+            )
+            return response.choices[0].message.content.strip()
+        else:
+            client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+            response = client.models.generate_content(
+                model=DEFAULT_GEMINI_MODEL,
+                contents=prompt,
+            )
+            return response.text.strip()
+    except Exception as exc:
+        print("⚠️ Store locator LLM call failed:", exc)
+        return ""
+
+
+def _run_store_locator(question: str, provider: str) -> dict:
+    """
+    Detect location in *question*, query the store CSV, generate a reply.
+    Returns a dict ready to embed in any endpoint response.
+    """
+    language = detect_language(question)
+    location_term = detect_location(question)
+
+    if location_term is None:
+        reply = (
+            "Untuk cari kedai berdekatan, boleh beritahu kawasan atau bandar anda?"
+            if language == "ms"
+            else "Sure! To find the nearest store for you, could you share your current area or city?"
+        )
+        return {
+            "needs_location": True,
+            "stores": [],
+            "closed_stores": [],
+            "reply": reply,
+            "language": language,
+        }
+
+    active_stores, closed_stores = find_matching_stores(location_term, load_stores())
+
+    if not active_stores and not closed_stores:
+        reply = (
+            "Maaf, tiada kedai ditemui berhampiran kawasan tersebut. "
+            "Cuba semak kawasan berhampiran seperti Kuala Lumpur, Selangor, Penang, atau Johor."
+            if language == "ms"
+            else "Sorry, no stores were found near that area. "
+               "Try checking nearby areas such as Kuala Lumpur, Selangor, Penang, or Johor."
+        )
+        return {
+            "needs_location": False,
+            "stores": [],
+            "closed_stores": [],
+            "reply": reply,
+            "language": language,
+            "location_detected": location_term,
+        }
+
+    prompt = build_store_locator_prompt(question, active_stores, language)
+    reply = _generate_store_reply(prompt, provider)
+    if not reply:
+        # plain-text fallback if LLM fails
+        reply = "\n\n".join(
+            f"📍 {s['name']}\n🏢 {s['location']}\n🕐 {s['operatingHours']}\n💬 {s['whatsappLink']}"
+            for s in active_stores[:5]
+        )
+
+    return {
+        "needs_location": False,
+        "stores": active_stores,
+        "closed_stores": closed_stores,
+        "reply": reply,
+        "language": language,
+        "location_detected": location_term,
+    }
+
+
 @app.get("/")
 def health() -> tuple[dict[str, str], int]:
     return {"status": "ok"}, 200
@@ -191,6 +285,24 @@ def engine_match_endpoint() -> tuple[Any, int]:
 
     if not isinstance(question, str) or not question.strip():
         return jsonify({"error": "Question cannot be empty."}), 400
+
+    # --- Store locator intercept ---
+    # If the question is about finding a physical store, skip the KB match
+    # and return store results directly under match = "STORE_LOCATOR".
+    if is_location_query(question):
+        store_result = _run_store_locator(question, provider)
+        match_key = (
+            "STORE_LOCATOR_NEEDS_LOCATION"
+            if store_result["needs_location"]
+            else "STORE_LOCATOR"
+        )
+        return jsonify({
+            "match": match_key,
+            "score": 1.0,
+            "matched_row": None,
+            "store_locator": store_result,
+        }), 200
+    # --- End store locator intercept ---
 
     knowledge_df = _get_knowledge_df(knowledge_path, knowledge_sheet)
     match, score, matched_row = engine_match(
@@ -334,6 +446,18 @@ def sales_redirect_endpoint() -> tuple[Any, int]:
         reply = response.text.strip()
 
     return jsonify({"reply": reply}), 200
+
+
+@app.post("/store-locator")
+def store_locator_endpoint() -> tuple[Any, int]:
+    payload = request.get_json(silent=True) or {}
+    user_message = payload.get("user_message", "")
+    provider = payload.get("provider", "gemini")
+
+    if not isinstance(user_message, str) or not user_message.strip():
+        return jsonify({"error": "user_message cannot be empty."}), 400
+
+    return jsonify(_run_store_locator(user_message, provider)), 200
 
 
 if __name__ == "__main__":
