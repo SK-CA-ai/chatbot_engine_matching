@@ -9,6 +9,7 @@ from typing import Iterable, Tuple
 
 from dotenv import load_dotenv
 import google.genai as genai
+from google.genai.errors import ServerError as GeminiServerError
 from openai import OpenAI
 
 from .db import fetch_llm_table_profile
@@ -27,6 +28,7 @@ load_dotenv(PROJECT_ROOT / ".env")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 DEFAULT_GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+FALLBACK_GEMINI_MODEL = os.getenv("FALLBACK_GEMINI_MODEL", "gemini-2.0-flash")
 DEFAULT_OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
 ACCESS_ALLOWED = os.getenv("ENGINE_MATCHING_ENABLED", "true").lower() in {"1", "true", "yes"}
 DEFAULT_STOCK_TABLE = os.getenv("STOCK_TABLE", "shopify_variant_new")
@@ -326,10 +328,20 @@ def engine_match(
 
     if provider_name == "gemini":
         client = _get_gemini_client()
-        response = client.models.generate_content(
-            model=DEFAULT_GEMINI_MODEL,
-            contents=prompt,
-        )
+        try:
+            response = client.models.generate_content(
+                model=DEFAULT_GEMINI_MODEL,
+                contents=prompt,
+            )
+        except GeminiServerError as exc:
+            if exc.status_code != 503:
+                raise
+            # Primary model overloaded — retry once with the fallback model
+            print(f"⚠️ {DEFAULT_GEMINI_MODEL} returned 503, retrying with {FALLBACK_GEMINI_MODEL}")
+            response = client.models.generate_content(
+                model=FALLBACK_GEMINI_MODEL,
+                contents=prompt,
+            )
         match = response.text.strip()
         score = 0.0
     elif provider_name == "openai":

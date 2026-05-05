@@ -11,6 +11,7 @@ import pandas as pd
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 import google.genai as genai
+from google.genai.errors import ServerError as GeminiServerError
 from openai import OpenAI
 
 from engine_matching import (
@@ -170,10 +171,19 @@ def _generate_store_reply(prompt: str, provider: str) -> str:
             return response.choices[0].message.content.strip()
         else:
             client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-            response = client.models.generate_content(
-                model=DEFAULT_GEMINI_MODEL,
-                contents=prompt,
-            )
+            try:
+                response = client.models.generate_content(
+                    model=DEFAULT_GEMINI_MODEL,
+                    contents=prompt,
+                )
+            except GeminiServerError as exc:
+                if exc.status_code != 503:
+                    raise
+                print(f"⚠️ {DEFAULT_GEMINI_MODEL} returned 503, retrying with {DEFAULT_GEMINI_MODEL.replace('2.5', '2.0')}")
+                response = client.models.generate_content(
+                    model=DEFAULT_GEMINI_MODEL.replace("2.5", "2.0"),
+                    contents=prompt,
+                )
             return response.text.strip()
     except Exception as exc:
         print("⚠️ Store locator LLM call failed:", exc)
@@ -305,13 +315,21 @@ def engine_match_endpoint() -> tuple[Any, int]:
     # --- End store locator intercept ---
 
     knowledge_df = _get_knowledge_df(knowledge_path, knowledge_sheet)
-    match, score, matched_row = engine_match(
-        question,
-        knowledge_df,
-        provider=provider,
-        conversation_summary=conversation_summary,
-        stock_table_schema=stock_table_schema,
-    )
+    try:
+        match, score, matched_row = engine_match(
+            question,
+            knowledge_df,
+            provider=provider,
+            conversation_summary=conversation_summary,
+            stock_table_schema=stock_table_schema,
+        )
+    except GeminiServerError as exc:
+        if exc.status_code == 503:
+            return jsonify({
+                "error": "AI model is temporarily unavailable due to high demand. Please try again in a moment.",
+                "error_code": "MODEL_UNAVAILABLE",
+            }), 503
+        raise
 
     if isinstance(matched_row, pd.Series):
         matched_payload: Any = matched_row.to_dict()
