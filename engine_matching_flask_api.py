@@ -31,6 +31,7 @@ from store_locator import (
     is_location_query,
     load_stores,
 )
+from faq_handler import is_faq_query, run_faq_lookup
 
 BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR / ".env")
@@ -330,6 +331,29 @@ def engine_match_endpoint() -> tuple[Any, int]:
             "store_locator": store_result,
         }), 200
     # --- End store locator intercept ---
+
+    # --- FAQ intercept ---
+    # If the question matches a CompAsia FAQ topic, look up the answer from
+    # CompAsia_FAQ.docx and return it directly — no KB match needed.
+    if is_faq_query(question):
+        gemini_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+        openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY")) if provider.lower() == "openai" else None
+        faq_result = run_faq_lookup(
+            question, provider,
+            gemini_client=gemini_client,
+            openai_client=openai_client,
+            gemini_model=DEFAULT_GEMINI_MODEL,
+            openai_model=DEFAULT_OPENAI_MODEL,
+        )
+        faq_reply = faq_result.get("reply", "")
+        return jsonify({
+            "match": "FAQ",
+            "score": 1.0,
+            "matched_row": {"keyword": "FAQ", "answer": faq_reply},
+            "reply": faq_reply,
+            "faq": faq_result,
+        }), 200
+    # --- End FAQ intercept ---
 
     knowledge_df = _get_knowledge_df(knowledge_path, knowledge_sheet)
     try:
