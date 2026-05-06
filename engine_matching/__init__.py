@@ -9,6 +9,7 @@ from typing import Iterable, Tuple
 
 from dotenv import load_dotenv
 import google.genai as genai
+from google.genai.errors import ClientError as GeminiClientError
 from google.genai.errors import ServerError as GeminiServerError
 from openai import OpenAI
 
@@ -500,10 +501,19 @@ def summarize_conversation(
 
     if provider_name == "gemini":
         client = _get_gemini_client()
-        response = client.models.generate_content(
-            model=DEFAULT_GEMINI_MODEL,
-            contents=prompt,
-        )
+        try:
+            response = client.models.generate_content(
+                model=DEFAULT_GEMINI_MODEL,
+                contents=prompt,
+            )
+        except GeminiServerError as exc:
+            if exc.status_code != 503:
+                raise
+            print(f"⚠️ {DEFAULT_GEMINI_MODEL} returned 503, retrying with {FALLBACK_GEMINI_MODEL}")
+            response = client.models.generate_content(
+                model=FALLBACK_GEMINI_MODEL,
+                contents=prompt,
+            )
         return response.text.strip()
 
     if provider_name == "openai":

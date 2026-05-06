@@ -11,6 +11,7 @@ import pandas as pd
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 import google.genai as genai
+from google.genai.errors import ClientError as GeminiClientError
 from google.genai.errors import ServerError as GeminiServerError
 from openai import OpenAI
 
@@ -42,6 +43,18 @@ DEFAULT_GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 DEFAULT_OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
 
 app = Flask(__name__)
+
+
+@app.errorhandler(GeminiClientError)
+def handle_gemini_client_error(exc: GeminiClientError):
+    """Catch Gemini 403 (leaked/invalid key) globally so it never returns 500."""
+    status = getattr(exc, "status_code", 403)
+    msg = (
+        "The Gemini API key is invalid or has been revoked. "
+        "Please update GEMINI_API_KEY in your environment settings."
+    )
+    print(f"⚠️ Gemini ClientError {status}: {exc}")
+    return jsonify({"error": msg, "error_code": "INVALID_API_KEY"}), 503
 
 
 _knowledge_df: pd.DataFrame | None = None
@@ -310,6 +323,9 @@ def engine_match_endpoint() -> tuple[Any, int]:
             "match": match_key,
             "score": 1.0,
             "matched_row": None,
+            # reply is surfaced at the top level so existing chatbot callers
+            # can consume it without knowing about the store_locator structure
+            "reply": store_result.get("reply", ""),
             "store_locator": store_result,
         }), 200
     # --- End store locator intercept ---
