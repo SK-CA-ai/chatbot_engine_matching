@@ -319,13 +319,14 @@ def engine_match_endpoint() -> tuple[Any, int]:
             if store_result["needs_location"]
             else "STORE_LOCATOR"
         )
+        store_reply = store_result.get("reply", "")
         return jsonify({
             "match": match_key,
             "score": 1.0,
-            "matched_row": None,
-            # reply is surfaced at the top level so existing chatbot callers
-            # can consume it without knowing about the store_locator structure
-            "reply": store_result.get("reply", ""),
+            # Populate matched_row.answer so chatbots that read matched_row
+            # (instead of the top-level reply) still receive the store reply.
+            "matched_row": {"keyword": match_key, "answer": store_reply},
+            "reply": store_reply,
             "store_locator": store_result,
         }), 200
     # --- End store locator intercept ---
