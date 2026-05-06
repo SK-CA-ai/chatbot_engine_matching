@@ -253,8 +253,15 @@ def is_location_query(text: str) -> bool:
     Triggers on:
     - Any single strong signal (nearest, outlet, branch, kedai, …)
     - Two or more weak signals together (where + store, find + location, …)
+    - Short follow-up reply (≤ 6 words) that contains a known location name,
+      e.g. user replies "Penang" or "I'm in Subang Jaya" after being asked
+      for their area.
     """
     tokens = set(re.findall(r"[a-zA-Z]+", text.lower()))
     if tokens & _STRONG_LOCATION_SIGNALS:
         return True
-    return len(tokens & _WEAK_LOCATION_SIGNALS) >= 2
+    if len(tokens & _WEAK_LOCATION_SIGNALS) >= 2:
+        return True
+    if len(tokens) <= 6 and detect_location(text) is not None:
+        return True
+    return False
