@@ -30,7 +30,9 @@ LOCATION_MAP: dict[str, list[str]] = {
     # Selangor
     "selangor": ["Selangor"],
     "petaling jaya": ["Petaling Jaya"],
+    "pj": ["Petaling Jaya"],
     "subang jaya": ["Subang Jaya", "Subang"],
+    "sj": ["Subang Jaya", "Subang"],
     "subang": ["Subang"],
     "puchong": ["Puchong"],
     "klang": ["Klang"],
@@ -47,6 +49,7 @@ LOCATION_MAP: dict[str, list[str]] = {
     "hulu kelang": ["Ulu Klang", "Hulu Kelang"],
     # Pulau Pinang
     "penang": ["Pulau Pinang", "Penang"],
+    "pg": ["Pulau Pinang", "Penang"],
     "pulau pinang": ["Pulau Pinang"],
     "bukit mertajam": ["Bukit Mertajam"],
     "perai": ["Perai"],
@@ -79,6 +82,7 @@ LOCATION_MAP: dict[str, list[str]] = {
     # Kelantan
     "kelantan": ["Kelantan"],
     "kota bharu": ["Kota Bharu"],
+    "kb": ["Kota Bharu"],
     "pasir puteh": ["Pasir Puteh"],
     "tunjong": ["Tunjong"],
     # Terengganu
