@@ -6,3 +6,7 @@ google-genai
 openai
 gunicorn
 psycopg[binary]
+sentence-transformers
+faiss-cpu
+numpy
+pyarrow

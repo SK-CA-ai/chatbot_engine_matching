@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import threading
 from pathlib import Path
 from typing import Any
 
@@ -77,6 +78,155 @@ def _get_knowledge_df(
         _knowledge_df = load_knowledge_base(path, sheet)
 
     return _knowledge_df
+
+
+# ------------------------------------------------------------------
+# Product recommendation runtime (lazy-loaded, cached across requests)
+# ------------------------------------------------------------------
+_rec_model = None
+_rec_cache = None
+_rec_lock = threading.Lock()
+
+
+def _get_rec_runtime():
+    global _rec_model, _rec_cache
+    with _rec_lock:
+        if _rec_model is None:
+            try:
+                from sentence_transformers import SentenceTransformer
+                from semantic_search import EMBED_MODEL
+                _rec_model = SentenceTransformer(EMBED_MODEL, device="cpu")
+            except Exception as exc:
+                print(f"[recommend] model load error: {exc}")
+                raise
+        if _rec_cache is None:
+            from semantic_search import load_cache
+            _rec_cache = load_cache()
+    return _rec_model, _rec_cache
+
+
+def _get_db_env() -> dict:
+    db_env_path = BASE_DIR / "db.env"
+    if db_env_path.exists():
+        from semantic_search import load_env_file
+        return load_env_file(str(db_env_path))
+    return {
+        "DB_HOST": os.getenv("DB_HOST", os.getenv("PGHOST", "")),
+        "DB_PORT": os.getenv("DB_PORT", os.getenv("PGPORT", "5432")),
+        "DB_NAME": os.getenv("DB_NAME", os.getenv("PGDATABASE", "")),
+        "DB_USER": os.getenv("DB_USER", os.getenv("PGUSER", "")),
+        "DB_PASSWORD": os.getenv("DB_PASSWORD", os.getenv("PGPASSWORD", "")),
+    }
+
+
+@app.post("/recommend")
+def recommend():
+    data = request.get_json(force=True, silent=True) or {}
+    question = str(data.get("question", "")).strip()
+    conversation_summary = str(data.get("conversation_summary", "")).strip()
+
+    if not question:
+        return jsonify({"error": "question is required"}), 400
+
+    try:
+        from semantic_search import (
+            EMBED_MODEL,
+            build_search_query,
+            fetch_full_records,
+            get_db_conn,
+            search_index,
+        )
+        from recommendation_bot import (
+            _build_human_reply,
+            _filter_rows_to_models_mentioned_in_reply,
+            _filter_rows_to_recommended_model,
+            _format_cards,
+            _is_refinement_query,
+            _recommended_in_results,
+            build_diverse_model_rows,
+        )
+
+        TOP_K = 3
+        CANDIDATE_K = 50
+
+        os.environ.setdefault("HF_HUB_OFFLINE", "1")
+        os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+        os.environ.setdefault("OMP_NUM_THREADS", "1")
+        os.environ.setdefault("MKL_NUM_THREADS", "1")
+
+        model, cache = _get_rec_runtime()
+        meta = cache.get("meta", {})
+        if not meta or meta.get("model") != EMBED_MODEL:
+            return jsonify({"error": "Search index not ready. Run build_vectors.py first."}), 503
+
+        index = cache["index"]
+        id_map = cache["id_map"]
+
+        enhanced_query = f"{question}\n\nContext: {conversation_summary}" if conversation_summary else question
+        search_query, recommended_model, price_min, price_max = build_search_query(enhanced_query, None)
+        effective_query = f"{recommended_model} {search_query}".strip() if recommended_model else search_query
+
+        scores, idx, _ = search_index(model, index, effective_query, CANDIDATE_K)
+
+        hits = []
+        for rank, i in enumerate(idx):
+            if i < 0 or i >= len(id_map):
+                continue
+            hits.append((rank + 1, id_map[i], float(scores[rank])))
+
+        if not hits:
+            return jsonify({"answer": "No matching products found."})
+
+        env = _get_db_env()
+        with get_db_conn(env) as conn:
+            keys = [h[1] for h in hits]
+            records = fetch_full_records(conn, keys)
+            record_map = {(int(r["product_id"]), int(r["variant_id"])): r for r in records}
+
+        rows = build_diverse_model_rows(
+            hits=hits,
+            record_map=record_map,
+            top_k=TOP_K,
+            price_min=price_min,
+            price_max=price_max,
+        )
+
+        if not rows:
+            if price_min is not None and price_max is not None:
+                msg = f"No matches in range {price_min} to {price_max}."
+            elif price_max is not None:
+                msg = f"No matches under {price_max}."
+            elif price_min is not None:
+                msg = f"No matches above {price_min}."
+            else:
+                msg = "No matches after filtering."
+            return jsonify({"answer": msg})
+
+        handles = [r["handle"] for r in rows if r.get("handle")]
+        in_results = _recommended_in_results(recommended_model or "", handles)
+        if in_results and recommended_model:
+            rows = _filter_rows_to_recommended_model(rows, recommended_model)
+            handles = [r["handle"] for r in rows if r.get("handle")]
+            in_results = _recommended_in_results(recommended_model or "", handles)
+
+        bot_reply = _build_human_reply(
+            query=question,
+            recommended_model=recommended_model,
+            recommended_in_results=in_results,
+            top_rows=rows,
+            memory=[],
+            price_min=price_min,
+            price_max=price_max,
+        )
+        rows = _filter_rows_to_models_mentioned_in_reply(rows, bot_reply)
+        answer = f"{bot_reply}\n\n{_format_cards(rows)}"
+
+        return jsonify({"answer": answer})
+
+    except Exception as exc:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(exc)}), 500
 
 
 def _detect_emotion(text: str, provider: str) -> str:
