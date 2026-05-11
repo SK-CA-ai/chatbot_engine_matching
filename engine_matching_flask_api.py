@@ -114,6 +114,25 @@ def _get_rec_runtime():
     return _rec_model, _rec_cache
 
 
+@app.get("/cache-status")
+def cache_status():
+    """Debug endpoint: show which cache dirs have files and current runtime state."""
+    import os as _os
+    dirs_info = {}
+    for d in [RAILWAY_CACHE_DIR, str(BASE_DIR / "cache"), "cache"]:
+        files = {}
+        for fname in ["meta.json", "index.faiss", "embeddings.parquet"]:
+            p = _os.path.join(d, fname)
+            files[fname] = _os.path.getsize(p) if _os.path.exists(p) else None
+        dirs_info[d] = files
+    cache_keys = list(_rec_cache.keys()) if isinstance(_rec_cache, dict) else str(type(_rec_cache))
+    return jsonify({
+        "cache_dirs": dirs_info,
+        "rec_cache_keys": cache_keys,
+        "rec_model_loaded": _rec_model is not None,
+    })
+
+
 @app.post("/upload-cache")
 def upload_cache():
     """Receive pre-built FAISS index files from the local machine and store in /tmp."""
