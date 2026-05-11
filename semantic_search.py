@@ -196,10 +196,14 @@ def build_search_query(
     return search_query, recommended_model, price_min, price_max
 
 
-def load_cache() -> Dict[str, object]:
-    meta_path = os.path.join(CACHE_DIR, CACHE_META)
-    index_path = os.path.join(CACHE_DIR, CACHE_INDEX)
-    embed_path = os.path.join(CACHE_DIR, CACHE_EMBEDDINGS)
+_PRODUCT_FIELDS = ["vendor", "product_type", "handle", "color", "spec", "condition", "tenure", "price"]
+
+
+def load_cache(cache_dir: Optional[str] = None) -> Dict[str, object]:
+    dir_ = cache_dir or os.getenv("SEMANTIC_CACHE_DIR", CACHE_DIR)
+    meta_path = os.path.join(dir_, CACHE_META)
+    index_path = os.path.join(dir_, CACHE_INDEX)
+    embed_path = os.path.join(dir_, CACHE_EMBEDDINGS)
     if not (os.path.exists(meta_path) and os.path.exists(embed_path)):
         return {}
     with open(meta_path, "r", encoding="utf-8") as f:
@@ -213,7 +217,16 @@ def load_cache() -> Dict[str, object]:
     else:
         index = _NumpyIPIndex(embeddings)
     id_map = list(zip(product_ids.tolist(), variant_ids.tolist()))
-    return {"meta": meta, "vectors": embeddings, "index": index, "id_map": id_map}
+    col_names = table.column_names
+    record_map: Dict[tuple, Dict[str, object]] = {}
+    for i, (pid, vid) in enumerate(id_map):
+        rec: Dict[str, object] = {"product_id": pid, "variant_id": vid}
+        for field in _PRODUCT_FIELDS:
+            if field in col_names:
+                val = table[field][i].as_py()
+                rec[field] = val if val else None
+        record_map[(pid, vid)] = rec
+    return {"meta": meta, "vectors": embeddings, "index": index, "id_map": id_map, "record_map": record_map}
 
 
 def main() -> int:

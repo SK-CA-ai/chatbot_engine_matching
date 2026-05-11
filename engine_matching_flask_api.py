@@ -104,7 +104,15 @@ def _get_rec_runtime():
                 raise
         if _rec_cache is None:
             from semantic_search import load_cache
-            _rec_cache = load_cache()
+            # Try the uploaded /tmp dir first, fall back to the git-committed cache/
+            for cache_dir in [RAILWAY_CACHE_DIR, str(BASE_DIR / "cache"), "cache"]:
+                result = load_cache(cache_dir)
+                if result:
+                    _rec_cache = result
+                    print(f"[recommend] loaded cache from {cache_dir}")
+                    break
+            if not _rec_cache:
+                _rec_cache = {}
     return _rec_model, _rec_cache
 
 
@@ -170,8 +178,6 @@ def recommend():
         from semantic_search import (
             EMBED_MODEL,
             build_search_query,
-            fetch_full_records,
-            get_db_conn,
             search_index,
         )
         from recommendation_bot import (
@@ -214,11 +220,17 @@ def recommend():
         if not hits:
             return jsonify({"answer": "No matching products found."})
 
-        env = _get_db_env()
-        with get_db_conn(env) as conn:
-            keys = [h[1] for h in hits]
-            records = fetch_full_records(conn, keys)
-            record_map = {(int(r["product_id"]), int(r["variant_id"])): r for r in records}
+        record_map = cache.get("record_map", {})
+        if not record_map:
+            # Old cache format (no product fields embedded) — try DB as fallback
+            try:
+                from semantic_search import fetch_full_records, get_db_conn
+                env = _get_db_env()
+                with get_db_conn(env) as conn:
+                    records = fetch_full_records(conn, [h[1] for h in hits])
+                    record_map = {(int(r["product_id"]), int(r["variant_id"])): r for r in records}
+            except Exception as db_exc:
+                print(f"[recommend] DB fallback failed: {db_exc}")
 
         rows = build_diverse_model_rows(
             hits=hits,
