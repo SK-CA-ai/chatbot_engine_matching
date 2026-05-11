@@ -102,7 +102,7 @@ def _get_rec_runtime():
             except Exception as exc:
                 print(f"[recommend] model load error: {exc}")
                 raise
-        if _rec_cache is None:
+        if not _rec_cache:
             from semantic_search import load_cache
             # Try the uploaded /tmp dir first, fall back to the git-committed cache/
             for cache_dir in [RAILWAY_CACHE_DIR, str(BASE_DIR / "cache"), "cache"]:
@@ -111,8 +111,6 @@ def _get_rec_runtime():
                     _rec_cache = result
                     print(f"[recommend] loaded cache from {cache_dir}")
                     break
-            if not _rec_cache:
-                _rec_cache = {}
     return _rec_model, _rec_cache
 
 
