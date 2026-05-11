@@ -88,6 +88,33 @@ _rec_cache = None
 _rec_lock = threading.Lock()
 
 
+def _build_index_from_db(model) -> None:
+    """Build FAISS index from PostgreSQL and save to cache. Called when cache is missing."""
+    from build_vectors import (
+        fetch_rows, build_sentence, embed_texts,
+        build_faiss_index, save_cache, compute_fingerprint,
+        EMBED_MODEL as BV_EMBED_MODEL,
+    )
+    env = _get_db_env()
+    print("[recommend] Fetching products from DB to build FAISS index...")
+    with __import__("psycopg2").connect(
+        host=env.get("DB_HOST"), port=env.get("DB_PORT"),
+        dbname=env.get("DB_NAME"), user=env.get("DB_USER"),
+        password=env.get("DB_PASSWORD"),
+    ) as conn:
+        rows = fetch_rows(conn, limit=None)
+    if not rows:
+        raise RuntimeError("No products found in DB — cannot build search index.")
+    id_map = [(int(r["product_id"]), int(r["variant_id"])) for r in rows]
+    texts = [build_sentence(r) for r in rows]
+    print(f"[recommend] Embedding {len(rows)} products...")
+    vectors = embed_texts(model, texts)
+    index = build_faiss_index(vectors)
+    meta = {"fingerprint": compute_fingerprint(rows), "model": BV_EMBED_MODEL, "row_count": len(rows), "limit": None}
+    save_cache(meta, vectors, id_map, index)
+    print("[recommend] FAISS index built and saved.")
+
+
 def _get_rec_runtime():
     global _rec_model, _rec_cache
     with _rec_lock:
@@ -100,8 +127,12 @@ def _get_rec_runtime():
                 print(f"[recommend] model load error: {exc}")
                 raise
         if _rec_cache is None:
-            from semantic_search import load_cache
+            from semantic_search import load_cache, EMBED_MODEL
             _rec_cache = load_cache()
+            if not _rec_cache.get("meta"):
+                # Cache missing on this server — build it from DB automatically
+                _build_index_from_db(_rec_model)
+                _rec_cache = load_cache()
     return _rec_model, _rec_cache
 
 
@@ -149,7 +180,6 @@ def recommend():
         TOP_K = 3
         CANDIDATE_K = 50
 
-        os.environ.setdefault("HF_HUB_OFFLINE", "1")
         os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
         os.environ.setdefault("OMP_NUM_THREADS", "1")
         os.environ.setdefault("MKL_NUM_THREADS", "1")
