@@ -735,6 +735,30 @@ def store_locator_endpoint() -> tuple[Any, int]:
     return jsonify(_run_store_locator(user_message, provider)), 200
 
 
+def _eager_load_cache():
+    """Load the FAISS index at startup so the first /recommend request is instant."""
+    global _rec_model, _rec_cache
+    try:
+        from sentence_transformers import SentenceTransformer
+        from semantic_search import EMBED_MODEL, load_cache
+        os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+        os.environ.setdefault("OMP_NUM_THREADS", "1")
+        _rec_model = SentenceTransformer(EMBED_MODEL, device="cpu")
+        for cache_dir in [RAILWAY_CACHE_DIR, str(BASE_DIR / "cache"), "cache"]:
+            result = load_cache(cache_dir)
+            if result:
+                _rec_cache = result
+                print(f"[startup] loaded cache from {cache_dir}")
+                break
+        if not _rec_cache:
+            print("[startup] no cache found — upload index via /upload-cache")
+    except Exception as exc:
+        print(f"[startup] cache preload failed: {exc}")
+
+
+_eager_load_cache()
+
+
 if __name__ == "__main__":
     port = int(os.getenv("PORT", "5050"))
     app.run(host="0.0.0.0", port=port)
